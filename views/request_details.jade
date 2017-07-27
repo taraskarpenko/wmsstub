@@ -1,0 +1,77 @@
+extends layout
+block content
+    script(src="/javascripts/scripts.js")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+    | Host : http://
+    input(size=40, id="host", value="newstoredev.newstore.local:8082")
+    | v0/token
+    br
+    | Username:
+    input(id="username", value="dev@newstore.com")
+    | Password:
+    input(type="password", id="password", value="Treptower1")
+    br
+    button(onclick="callToken(document.getElementById('host').value,document.getElementById('username').value, document.getElementById('password').value)") Get Token
+    button(onclick="clearCookies()") Clear Cookies
+    br
+    textarea(readonly, cols=200, rows=4, id="token_field")
+    br
+    font(size=5) WMS emulation for NewStore integration
+    br
+    a(id='back-link', href="/stub") <<< Back to list
+    br
+    font(size=5) Details for request
+    font(size=5, color="red", id="request_id") #{request_id}
+    form(action="/stub/" + request_id + "/acknowledge", method="post", onsubmit="return isAckPossible()")
+        input(type="submit", value="Acknowledge", style="font-family: sans-serif; font-size: 40px;")
+    br
+    font(size=3) If there was multiple requests with same ID they all will be listed here
+    br
+    each request in requests
+        font(size=6) Request received at
+        font(size=5, color="red")  #{request[0].received_at}
+        br
+        label(for="original_payload") Original request data
+        textarea(readonly, cols=200, rows=4, id="original_payload")= JSON.stringify(JSON.parse(request[0].original_payload), null, 2)
+        table
+            tr
+                td
+                    - billing_address = JSON.parse(request[0].billing_address)
+                    font(size=4, color="blue") Billing Address
+                    each val, key in billing_address
+                        br
+                        | #{key} : #{val}
+                td
+                    - shipping_address = JSON.parse(request[0].shipping_address)
+                    font(size=4, color="blue") Shipping Address
+                    each val, key in shipping_address
+                        br
+                        | #{key} : #{val}
+            tr
+                td Shipping option
+                td #{request[0].shipping_options}
+        font(size=4, color="blue") Items
+        table
+            tr
+                th Product ID
+                th Item unique ID
+                th Extended attributes
+            each item in request
+                tr
+                    td= item.product_id.replace("\"","").replace("\"","")
+                    td= item.item_id.replace("\"","").replace("\"","")
+                    td= item.extended_attributes
+        br
+        form(action="/stub/" + request_id + "/reject", method="post", onsubmit="return isRejectPossible()")
+            each item in request
+                font= item.item_id.replace("\"","").replace("\"","") + " ( " + item.product_id.replace("\"","").replace("\"","") + " ) "
+                select(name=item.item_id.replace("\"","").replace("\"",""))
+                    option(value="none") -
+                    option(value="inventory_mismatch") Inventory mismatch
+                    option(value="unavailable_for_fulfillment") Unavailable for fulfillment
+                br
+            input(type="submit", value="Reject", style="font-family: sans-serif; font-size: 40px;")
+        br
+        br
+        br
+
