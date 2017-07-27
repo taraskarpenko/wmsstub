@@ -41,29 +41,3 @@ function callToken(host, username, password) {
             alert("incorrect username or password for " + host);
         });
 }
-
-// function acknowledge(host, token, request_id) {
-//     var options = {
-//         url:"https://" + host + "/v0/d/fulfillment_requests/" + request_id + "/acknowledgement",
-//         method:"POST",
-//         data:{},
-//         headers:{authorization: token}
-//     };
-//     alert(JSON.stringify(options));
-//     $.ajax(options)
-//         .done(function (message) {
-//             alert(JSON.stringify(message));
-//         })
-//         .fail(function (message) {
-//             alert("Something went wrong \n" + JSON.stringify(message));
-//         });
-//     // $.post("http://" + host + "/v0/d/fulfillment_requests/" + request_id + "/acknowledgement",
-//     //     "")
-//     //     .done(function (message) {
-//     //         alert(message);
-//     //     })
-//     //     .fail(function (message) {
-//     //         alert("Something went wrong \n" + message);
-//     //     });
-//
-// }

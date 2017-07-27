@@ -3,7 +3,6 @@ extends layout
 block content
     h1 WMS emulation for NewStore integration
     p List of received requests
-    p My public ip #{public_ip}
     table(id="requests_table",)
         tr
             th #
@@ -23,7 +22,7 @@ block content
                 td= value.created_at
                 td= value.received_at
                 td
-                    each val1, idx in value.products.split(',')
+                    each val1 in value.products.split(',')
                         p= val1.replace('\"','').replace('\"','')
                 td
                     a(href= "/stub/" + value.request_id) >>>>>>>>
