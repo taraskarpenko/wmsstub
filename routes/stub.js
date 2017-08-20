@@ -1,111 +1,46 @@
+"use strict";
 var express = require('express');
 var router = express.Router();
-var db = require('../db');
-var http = require("http");
-var request = require('request');
+var handlers = require('./handlers');
 
+// UI Page to show all requests
 router.get('/', function (req, res) {
-    db.all("SELECT request_id, created_at, group_concat(product_id) as products, received_at FROM ff_requests GROUP BY request_id, created_at, received_at ORDER BY received_at",
-        function (err, rows) {
-            if (err) {
-                console.log(JSON.stringify(err));
-                res.render('error', {error: {stack: JSON.stringify(err), status: 'SQLError'}});
-            } else {
-                res.render('requests_list', {
-                    requests: rows
-                });
-            }
-        });
+    handlers.getRequestList(req, res);
 });
 
+// UI Page to show request details
 router.get('/:id', function (req, res) {
-    getRequestDetailsFromDB(req.params.id, function (details) {
-        res.render('request_details',
-            {
-                request_id: req.params.id,
-                requests: details
-            });
-    });
-
+    handlers.getRequestDetails(req, res)
 });
 
+// STUB
 router.post('/', function (req, res) {
-    "use strict";
-    let reqBody = req.body;
-
-    console.log(reqBody);
-    reqBody.items.forEach(function (item) {
-        let stmt = db.prepare("INSERT INTO ff_requests (request_id, billing_address, shipping_address, shipping_options," +
-            "created_at, product_id, item_id, extended_attributes, original_payload) VALUES (?,?,?,?,?,?,?,?,?)");
-        stmt.run(reqBody.id,
-            JSON.stringify(reqBody.billing_address),
-            JSON.stringify(reqBody.shipping_address),
-            JSON.stringify(reqBody.shipping_options),
-            JSON.stringify(reqBody.created_at),
-            JSON.stringify(item.product_id),
-            JSON.stringify(item.item_id),
-            JSON.stringify(item.extended_attributes),
-            JSON.stringify(reqBody)
-        );
-        stmt.finalize();
-    });
-
-    res.status(200);
-    res.send('respond with a resource');
+    handlers.postFFRequest(req, res)
 });
 
-router.post('/:id/reject', function (req, res) {
-    console.log(req.body);
-    console.log(req.cookies);
-    res.send("");
-});
-
+// GET REJECTION STATUS
 router.get('/:id/reject', function (req, res) {
-    console.log(req.body);
-    console.log(req.cookies);
-    res.send("");
+    handlers.getFFRequestByIdRejection(req, res);
 });
 
+// POST REJECTION
+router.post('/:id/reject', function (req, res) {
+    handlers.postFFRequestByIdRejection(req, res);
+});
+
+// POST ACKNOWLEDGEMENT
 router.post('/:id/acknowledge', function (req, res) {
-    "use strict";
-    let url = (req.cookies.host.includes(".newstore.net") ? "https://" : "http://") + req.cookies.host;
-    let headers = {
-        'Authorization': req.cookies.token
-    };
-    let options = {
-        url: url + "/v0/d/fulfillment_requests/" + req.params.id + "/acknowledgement",
-        method: 'POST',
-        headers: headers
-    };
-
-    request(options, function (error, response, body) {
-        if (!error) {
-            res.send(JSON.stringify(body));
-        } else {
-            console.log("error" + error);
-            res.locals.message = error.message;
-            res.locals.error = error;
-            res.status(error.status || 500);
-            res.render('error');
-        }
-    });
+    handlers.postFFRequestByIdAcknowledgement(req, res);
 });
 
-function getRequestDetailsFromDB(requestId, callback) {
-    "use strict";
-    let requestDetails = [];
-    db.all("SELECT distinct received_at FROM ff_requests where request_id='" + requestId + "'ORDER BY received_at",
+// GET SHIPPMENT STATUS
+router.get('/:id/ship', function (req, res) {
+    handlers.getFFRequestByIdShipment(req, res);
+});
 
-        function (err, rows) {
-            for (let key in rows) {
-                db.all("SELECT * FROM ff_requests WHERE request_id='" + requestId + "' AND received_at =  DATETIME('" + rows[key].received_at + "')", function (err, rows1) {
-                    requestDetails[requestDetails.length] = rows1;
-                    if (requestDetails.length === rows.length) {
-                        callback(requestDetails);
-                    }
-                });
-            }
-        });
-}
+// POST NEW SHIPPMENT
+router.post('/:id/ship', function (req, res) {
+    handlers.postFFRequestByIdShippment(req, res);
+});
 
 module.exports = router;

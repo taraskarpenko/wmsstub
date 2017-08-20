@@ -1,0 +1,24 @@
+extends layout
+
+block content
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+    script(src="/javascripts/scripts.js")
+    if success === true
+        p.success Request was sent successfully
+        p.success Status code: #{status_code}
+    else
+        p.failure Failed to send request
+        p.failure Status code: #{status_code}
+    fieldset
+        legend Response body (Click to extend)
+        textarea.response_body(readonly, cols=60, rows=8)
+            | #{JSON.stringify(JSON.parse(response_body), null, 2)}
+    br
+    if(request_type === "rejection")
+        button(id="get_rejection_status_btn", onclick="getRejectionStatus('#{request_id}')") Get rejection status
+        textarea(readonly, rows=7, id="rejectionStatus")
+    if(request_type === "shippment")
+        button(id="get_shipment_status_btn", onclick="getShippmentStatus('#{request_id}')") Get shipment status
+        textarea(readonly, rows=7, id="shippmentStatus")
+    a(id='back-link', href="/stub/" + request_id) <<< Back to request
+

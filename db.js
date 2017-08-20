@@ -1,8 +1,9 @@
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database(':memory:');
+var file = "fulfilment_requests";
+var db = new sqlite3.Database(file);
 
 db.serialize(function() {
-    db.run("CREATE TABLE ff_requests " +
+    db.run("CREATE TABLE IF NOT EXISTS ff_requests " +
         "(request_id TEXT, " +
         "billing_address TEXT, " +
         "shipping_address TEXT, " +

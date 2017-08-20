@@ -25,3 +25,51 @@ td {
     border: 1px solid black;
     padding: 0;
 }
+
+textarea {
+    width: 99%;
+}
+
+button[id^=add_shippment] {
+    background-color: #4CAF50; /* Green */
+    border-color: #4C8050;
+    border-radius: 8px;
+    color: white;
+    padding: 0px 6px;
+    text-align: center;
+    font-size: 30px;
+}
+
+button[id^=get_shipment_status_btn] {
+    background-color: #4CAF50; /* Green */
+    border-color: #4C8050;
+    border-radius: 8px;
+    color: white;
+    padding: 0px 6px;
+    text-align: center;
+    font-size: 15px;
+}
+
+button[id^=get_rejection_status_btn] {
+    background-color: #4CAF50; /* Green */
+    border-color: #4C8050;
+    border-radius: 8px;
+    color: white;
+    padding: 0px 6px;
+    text-align: center;
+    font-size: 15px;
+}
+
+p.success {
+    color: #4CAF50;
+    font-size: 20px;
+}
+
+p.failure {
+    color: #FF2020;
+    font-size: 20px;
+}
+
+textarea.response_body {
+    font-size: 16px;
+}

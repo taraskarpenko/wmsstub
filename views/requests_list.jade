@@ -1,11 +1,11 @@
 extends layout
 
 block content
-    h1 WMS emulation for NewStore integration
+    h1 WMS simulator for NewStore integration
     p List of received requests
     table(id="requests_table",)
         tr
-            th #
+            th Customer
             th Request ID
             th Created at
                 br
@@ -17,7 +17,7 @@ block content
             th Details
         each value, index in requests
             tr
-                td= index
+                td= value.customer_n1 + " " + value.customer_n2
                 td= value.request_id
                 td= value.created_at
                 td= value.received_at

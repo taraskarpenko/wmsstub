@@ -1,29 +1,29 @@
 extends layout
 block content
-    script(src="/javascripts/scripts.js")
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
-    | Host : http://
-    input(size=40, id="host", value="newstoredev.newstore.local:8082")
+    script(src="/javascripts/scripts.js")
+    | Host : https://
+    input(size=40, id="host", value="dodici.v.newstore.net")
     | v0/token
     br
     | Username:
-    input(id="username", value="dev@newstore.com")
+    input(id="username", value="")
     | Password:
     input(type="password", id="password", value="")
     br
     button(onclick="callToken(document.getElementById('host').value,document.getElementById('username').value, document.getElementById('password').value)") Get Token
     button(onclick="clearCookies()") Clear Cookies
     br
-    textarea(readonly, cols=200, rows=4, id="token_field")
+    textarea(readonly, cols=200, rows=3, id="token_field")
     br
-    font(size=5) WMS emulation for NewStore integration
+    font(size=5) WMS simulator for NewStore integration
     br
     a(id='back-link', href="/stub") <<< Back to list
     br
     font(size=5) Details for request
     font(size=5, color="red", id="request_id") #{request_id}
     form(action="/stub/" + request_id + "/acknowledge", method="post", onsubmit="return isAckPossible()")
-        input(type="submit", value="Acknowledge", style="font-family: sans-serif; font-size: 40px;")
+        input(type="submit", value="Acknowledge")
     br
     font(size=3) If there was multiple requests with same ID they all will be listed here
     br
@@ -32,7 +32,7 @@ block content
         font(size=5, color="red")  #{request[0].received_at}
         br
         label(for="original_payload") Original request data
-        textarea(readonly, cols=200, rows=4, id="original_payload")= JSON.stringify(JSON.parse(request[0].original_payload), null, 2)
+        textarea(readonly, rows=3, id="original_payload")= JSON.stringify(JSON.parse(request[0].original_payload), null, 2)
         table
             tr
                 td
@@ -62,15 +62,30 @@ block content
                     td= item.item_id.replace("\"","").replace("\"","")
                     td= item.extended_attributes
         br
-        form(action="/stub/" + request_id + "/reject", method="post", onsubmit="return isRejectPossible()")
-            each item in request
-                font= item.item_id.replace("\"","").replace("\"","") + " ( " + item.product_id.replace("\"","").replace("\"","") + " ) "
-                select(name=item.item_id.replace("\"","").replace("\"",""))
-                    option(value="none") -
-                    option(value="inventory_mismatch") Inventory mismatch
-                    option(value="unavailable_for_fulfillment") Unavailable for fulfillment
+        fieldset
+            legend Reject (Click to expand)
+            form(id="rejection_form", action="/stub/" + request_id + "/reject", method="post", onsubmit="return isRejectPossible()")
+                select(name="rejection_reason", onchange="onJejectionReasonChange(#{JSON.stringify(request)})")
+                    option(value="no_inventory") No Inventory
+                    option(value="cannot_fulfill") Can not fulfil
                 br
-            input(type="submit", value="Reject", style="font-family: sans-serif; font-size: 40px;")
+                br
+                select(name="missing_items" multiple)
+                    each item in request
+                        option(value=item.item_id.replace("\"", "").replace("\"", "")) #{item.product_id} (#{item.item_id.replace("\"", "").replace("\"", "")})
+                br
+                input(type="submit", value="Reject")
+            br
+            button(id="get_rejection_status_btn", onclick="getRejectionStatus(document.getElementById('request_id').innerText)") Get rejection status
+            textarea(readonly, rows=3, id="rejectionStatus")
+        fieldset(id="shippment")
+            legend Shippment (Click to expand)
+            button(id="add_shippment#{request[0].received_at}", onclick="addShippmentUi(#{JSON.stringify(request)})") +
+            form(id="shippment_outer_form#{request[0].received_at}", action="/stub/" + request_id + "/ship", method="post", onsubmit="return isShippmentPossible()")
+                input(id="shippment_submit_button#{request[0].received_at}", type="submit", value="Send shippment notification")
+            br
+            button(id="get_shipment_status_btn", onclick="getShippmentStatus(document.getElementById('request_id').innerText)") Get shipment status
+            textarea(readonly, rows=3, id="shippmentStatus")
         br
         br
         br
