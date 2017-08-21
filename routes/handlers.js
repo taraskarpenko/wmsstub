@@ -279,7 +279,7 @@ function getRequestDetailsFromDB(requestId, callback) {
         .then(function (rows) {
             var resPromises = [];
             for (let key in rows) {
-                resPromises.push(promisifiedDbAll("SELECT * FROM ff_requests WHERE request_id='" + requestId + "' AND received_at =  DATETIME('" + rows[key].received_at + "')"));
+                resPromises.push(promisifiedDbAll("SELECT * FROM ff_requests WHERE request_id='" + requestId + "' AND received_at = '" + rows[key].received_at + "'"));
             }
             return Promise.all(resPromises)
         })
