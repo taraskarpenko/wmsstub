@@ -42,10 +42,10 @@ exports.postFFRequest = function (req, res) {
     let reqBody = req.body;
 
     console.log(reqBody);
-    var current_time_stamp = new Date().toGMTString();
+    let stmt = db.prepare("INSERT INTO ff_requests (request_id, billing_address, shipping_address, shipping_options," +
+            "created_at, product_id, item_id, extended_attributes, original_payload) VALUES (?,?,?,?,?,?,?,?,?)");
+
     reqBody.items.forEach(function (item) {
-        let stmt = db.prepare("INSERT INTO ff_requests (request_id, billing_address, shipping_address, shipping_options," +
-            "created_at, product_id, item_id, extended_attributes, original_payload, received_at) VALUES (?,?,?,?,?,?,?,?,?,?)");
         stmt.run(reqBody.id,
             JSON.stringify(reqBody.billing_address),
             JSON.stringify(reqBody.shipping_address),
@@ -54,11 +54,11 @@ exports.postFFRequest = function (req, res) {
             JSON.stringify(item.product_id),
             JSON.stringify(item.item_id),
             JSON.stringify(item.extended_attributes),
-            JSON.stringify(reqBody),
-            current_time_stamp
+            JSON.stringify(reqBody)
         );
-        stmt.finalize();
     });
+
+    stmt.finalize();
 
     res.status(200);
     res.send('respond with a resource');
