@@ -56,9 +56,10 @@ block content
             tr
                 td Order extended attributes
                 td 
-                    each attr, idx in JSON.parse(request[0].order_extended_attributes)
-                        | #{attr.name} : #{attr.value}
-                        br
+                    - if(request[0].order_extended_attributes)
+                        each attr, idx in JSON.parse(request[0].order_extended_attributes)
+                            | #{attr.name} : #{attr.value}
+                            br
 
         font(size=4, color="blue") Items
         table
@@ -71,9 +72,10 @@ block content
                     td= item.product_id.replace("\"","").replace("\"","")
                     td= item.item_id.replace("\"","").replace("\"","")
                     td 
-                        each attr, idx in JSON.parse(item.extended_attributes)
-                            | #{attr.name} : #{attr.value}
-                            br
+                        - if(item.extended_attributes)
+                            each attr, idx in JSON.parse(item.extended_attributes)
+                                | #{attr.name} : #{attr.value}
+                                br
         br
         fieldset
             legend Reject (Click to expand)
