@@ -43,7 +43,7 @@ exports.postFFRequest = function (req, res) {
 
     console.log(reqBody);
     let stmt = db.prepare("INSERT INTO ff_requests (request_id, billing_address, shipping_address, shipping_options," +
-            "created_at, product_id, item_id, extended_attributes, original_payload) VALUES (?,?,?,?,?,?,?,?,?)");
+            "created_at, product_id, item_id, extended_attributes, order_extended_attributes, original_payload) VALUES (?,?,?,?,?,?,?,?,?,?)");
 
     reqBody.items.forEach(function (item) {
         stmt.run(reqBody.id,
@@ -54,6 +54,7 @@ exports.postFFRequest = function (req, res) {
             JSON.stringify(item.product_id),
             JSON.stringify(item.item_id),
             JSON.stringify(item.extended_attributes),
+            JSON.stringify(reqBody.extended_attributes),
             JSON.stringify(reqBody)
         );
     });

@@ -12,6 +12,7 @@ db.serialize(function() {
         "product_id TEXT, " +
         "item_id TEXT, " +
         "extended_attributes TEXT, " +
+        "order_extended_attributes TEXT," +
         "original_payload TEXT," +
         "received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
 });
