@@ -58,4 +58,6 @@ typings/
 .env
 
 .idea/
+.vscode/
+fulfilment_requests
 

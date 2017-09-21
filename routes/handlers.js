@@ -41,6 +41,9 @@ exports.getRequestDetails = function (req, res) {
 exports.postFFRequest = function (req, res) {
     let reqBody = req.body;
 
+    console.log("headers" + JSON.stringify(req.headers));
+    console.log("host" + req.host);
+    
     console.log(reqBody);
     let stmt = db.prepare("INSERT INTO ff_requests (request_id, billing_address, shipping_address, shipping_options," +
             "created_at, product_id, item_id, extended_attributes, order_extended_attributes, original_payload) VALUES (?,?,?,?,?,?,?,?,?,?)");
