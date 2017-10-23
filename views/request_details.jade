@@ -56,7 +56,7 @@ block content
             tr
                 td Order extended attributes
                 td 
-                    - if(request[0].order_extended_attributes)
+                    - if(JSON.parse(request[0].order_extended_attributes))
                         each attr, idx in JSON.parse(request[0].order_extended_attributes)
                             | #{attr.name} : #{attr.value}
                             br
@@ -72,7 +72,7 @@ block content
                     td= item.product_id.replace("\"","").replace("\"","")
                     td= item.item_id.replace("\"","").replace("\"","")
                     td 
-                        - if(item.extended_attributes)
+                        - if(JSON.parse(item.extended_attributes))
                             each attr, idx in JSON.parse(item.extended_attributes)
                                 | #{attr.name} : #{attr.value}
                                 br
