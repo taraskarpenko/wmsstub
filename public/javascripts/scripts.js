@@ -18,8 +18,7 @@ window.onload = function () {
             }
         }
     }
-}
-;
+};
 
 function clearCookies() {
     var cookies = decodeURIComponent(document.cookie).split(";");
@@ -28,7 +27,7 @@ function clearCookies() {
         document.cookie = cookies[i].split("=")[0] + "=;path=/;expires=" + d.toUTCString();
     }
     document.getElementById('token_field').value = "";
-}
+};
 
 function checkToken() {
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -44,19 +43,19 @@ function checkToken() {
     }
     alert("Credentials are required");
     return false;
-}
+};
 
 function isAckPossible() {
     return checkToken();
-}
+};
 
 function isRejectPossible() {
     return checkToken();
-}
+};
 
 function isShippmentPossible() {
     return checkToken();
-}
+};
 
 function callToken(host, username, password) {
     $.ajax({
@@ -76,34 +75,38 @@ function callToken(host, username, password) {
 }
 
 function getShippmentStatus(request_id) {
-    $.ajax({
-        type: "GET",
-        url: "/stub/" + request_id + "/ship"
-    })
-        .done(function (message) {
-            document.getElementById('shippmentStatus').value = JSON.stringify(JSON.parse(message), null, 2)
+    if(isShippmentPossible()) {
+        $.ajax({
+            type: "GET",
+            url: "/stub/" + request_id + "/ship"
         })
-        .fail(function (message) {
-            alert(JSON.stringify(message));
-        });
+            .done(function (message) {
+                document.getElementById('shippmentStatus').value = JSON.stringify(JSON.parse(message), null, 2)
+            })
+            .fail(function (message) {
+                alert(JSON.stringify(message));
+            });
+        }
 }
 
 function getRejectionStatus(request_id) {
-    $.ajax({
-        type: "GET",
-        url: "/stub/" + request_id + "/reject"
-    })
-        .done(function (message) {
-            let mess = {};
-            if (message) {
-                mess = message;
-            }
-            console.log(mess);
-            document.getElementById('rejectionStatus').value = JSON.stringify(JSON.parse(mess), null, 2);
+    if(isRejectPossible()) {
+        $.ajax({
+            type: "GET",
+            url: "/stub/" + request_id + "/reject"
         })
-        .fail(function (message) {
-            alert(JSON.stringify(message));
-        });
+            .done(function (message) {
+                let mess = {};
+                if (message) {
+                    mess = message;
+                }
+                console.log(mess);
+                document.getElementById('rejectionStatus').value = JSON.stringify(JSON.parse(mess), null, 2);
+            })
+            .fail(function (message) {
+                alert(JSON.stringify(message));
+            });
+        }
 }
 
 function addShippmentUi(request) {
@@ -123,12 +126,11 @@ function addShippmentUi(request) {
     let itemsInput = document.createElement('select');
     itemsInput.setAttribute("name", "shippment" + indexxx + "_orderItems");
     itemsInput.setAttribute("multiple", "");
-    for (var index in request) {
-        let id = request[index].product_id;
-        let itemId = request[index].item_id;
+    for (var index in request.items) {
+        let id = request.items[index].product_id;
         let option = document.createElement("option");
-        option.setAttribute("value", itemId.replace("\"", "").replace("\"", ""));
-        option.innerHTML = itemId + " ( " + id + " ) ";
+        option.setAttribute("value", id);
+        option.innerHTML = id;
         itemsInput.appendChild(option);
     }
 
@@ -147,8 +149,8 @@ function addShippmentUi(request) {
     shippmentForm.appendChild(document.createElement("br"));
     shippmentForm.appendChild(itemsInput);
     shippmentForm.appendChild(selectionWarning);
-    let submitButton = document.getElementById('shippment_submit_button' + request[0].received_at);
-    document.getElementById('shippment_outer_form' + request[0].received_at).insertBefore(shippmentForm, submitButton);
+    let submitButton = document.getElementById('shippment_submit_button' + request.version);
+    document.getElementById('shippment_outer_form' + request.version).insertBefore(shippmentForm, submitButton);
 
 }
 

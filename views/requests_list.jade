@@ -6,6 +6,7 @@ block content
     table(id="requests_table",)
         tr
             th Customer
+            th Order ID
             th Request ID
             th Created at
                 br
@@ -17,13 +18,14 @@ block content
             th Details
         each value, index in requests
             tr
-                td= value.customer_n1 + " " + value.customer_n2
+                td= value.customer
+                td= value.order_id
                 td= value.request_id
                 td= value.created_at
                 td= value.received_at
                 td
-                    each val1 in value.products.split(',')
-                        p= val1.replace('\"','').replace('\"','')
+                    each val1 in value.products.split(';')
+                        p= val1
                 td
                     a(href= "/stub/" + value.request_id) >>>>>>>>
 

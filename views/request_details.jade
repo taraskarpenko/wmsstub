@@ -29,20 +29,23 @@ block content
     br
     each request in requests
         font(size=6) Request received at
-        font(size=5, color="red")  #{request[0].received_at}
+        font(size=5, color="red")  #{request.received_at}
         br
         label(for="original_payload") Original request data
-        textarea(readonly, rows=3, id="original_payload")= JSON.stringify(JSON.parse(request[0].original_payload), null, 2)
+        textarea(readonly, rows=3, id="original_payload")= JSON.stringify(JSON.parse(request.original_payload), null, 2)
         table
             tr
+                td 
+                    font(size=4, color="blue") Order ID : #{request.order_id}
+            tr
                 td
-                    - billing_address = JSON.parse(request[0].billing_address)
+                    - billing_address = request.billing_address
                     font(size=4, color="blue") Billing Address
                     each val, key in billing_address
                         br
                         | #{key} : #{val}
                 td
-                    - shipping_address = JSON.parse(request[0].shipping_address)
+                    - shipping_address = request.shipping_address
                     font(size=4, color="blue") Shipping Address
                     each val, key in shipping_address
                         br
@@ -50,13 +53,13 @@ block content
             tr
                 td Shipping option
                 td 
-                    | Carrier : #{JSON.parse(request[0].shipping_options).carrier}
+                    | Carrier : #{request.shipping_options.carrier}
                     br
-                    | Service level : #{JSON.parse(request[0].shipping_options).service_level}
+                    | Service level : #{request.shipping_options.service_level}
             tr
                 td Order extended attributes
                 td 
-                    - if(JSON.parse(request[0].order_extended_attributes))
+                    - if(request.order_extended_attributes)
                         each attr, idx in JSON.parse(request[0].order_extended_attributes)
                             | #{attr.name} : #{attr.value}
                             br
@@ -65,15 +68,13 @@ block content
         table
             tr
                 th Product ID
-                th Item unique ID
                 th Extended attributes
-            each item in request
+            each item in request.items
                 tr
-                    td= item.product_id.replace("\"","").replace("\"","")
-                    td= item.item_id.replace("\"","").replace("\"","")
+                    td= item.product_id
                     td 
-                        - if(JSON.parse(item.extended_attributes))
-                            each attr, idx in JSON.parse(item.extended_attributes)
+                        - if(item.extended_attributes)
+                            each attr, idx in item.extended_attributes
                                 | #{attr.name} : #{attr.value}
                                 br
         br
@@ -83,11 +84,12 @@ block content
                 select(name="rejection_reason", onchange="onJejectionReasonChange(#{JSON.stringify(request)})")
                     option(value="no_inventory") No Inventory
                     option(value="cannot_fulfill") Can not fulfil
+                    option(value="cancellation_request") Cancellation on request
                 br
                 br
-                select(name="missing_items" multiple)
-                    each item in request
-                        option(value=item.item_id.replace("\"", "").replace("\"", "")) #{item.product_id} (#{item.item_id.replace("\"", "").replace("\"", "")})
+                select(name="missing_product_ids" multiple)
+                    each item in request.items
+                        option(value=item.product_id) #{item.product_id}
                 br
                 input(type="submit", value="Reject")
             br
@@ -95,9 +97,9 @@ block content
             textarea(readonly, rows=3, id="rejectionStatus")
         fieldset(id="shippment")
             legend Shippment (Click to expand)
-            button(id="add_shippment#{request[0].received_at}", onclick="addShippmentUi(#{JSON.stringify(request)})") +
-            form(id="shippment_outer_form#{request[0].received_at}", action="/stub/" + request_id + "/ship", method="post", onsubmit="return isShippmentPossible()")
-                input(id="shippment_submit_button#{request[0].received_at}", type="submit", value="Send shippment notification")
+            button(id="add_shippment#{request.version}", onclick="addShippmentUi(#{JSON.stringify(request)})") +
+            form(id="shippment_outer_form#{request.version}", action="/stub/" + request_id + "/ship", method="post", onsubmit="return isShippmentPossible()")
+                input(id="shippment_submit_button#{request.version}", type="submit", value="Send shippment notification")
             br
             button(id="get_shipment_status_btn", onclick="getShippmentStatus(document.getElementById('request_id').innerText)") Get shipment status
             textarea(readonly, rows=3, id="shippmentStatus")
