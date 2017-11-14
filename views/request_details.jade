@@ -59,8 +59,8 @@ block content
             tr
                 td Order extended attributes
                 td 
-                    - if(request.order_extended_attributes)
-                        each attr, idx in JSON.parse(request[0].order_extended_attributes)
+                    - if(request.extended_attributes)
+                        each attr, idx in request.extended_attributes
                             | #{attr.name} : #{attr.value}
                             br
 
