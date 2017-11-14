@@ -109,7 +109,7 @@ exports.postFFRequest = function (req, res) {
             });
             stmt5.finalize();
         }
-        
+
         promisifiedInsertItems(reqBody.id, version, reqBody.items);
 
     });
@@ -345,9 +345,11 @@ function insertItemWithAttr(request_id, version, item) {
         db.run(query, [request_id, version, item.product_id], function (err) {
             let stmt2 = db.prepare("INSERT INTO item_extended_attr (item_id, name, value) VALUES (?,?,?)");
             let id = this.lastID;
-            item.extended_attributes.forEach(function (attribute) {
-                stmt2.run(id, attribute.name, attribute.value);
-            });
+            if(item.extended_attributes){
+                item.extended_attributes.forEach(function (attribute) {
+                    stmt2.run(id, attribute.name, attribute.value);
+                });
+            }
             stmt2.finalize(function () {
                 return resolve();
             });
