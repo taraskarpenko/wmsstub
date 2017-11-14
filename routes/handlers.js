@@ -98,17 +98,18 @@ exports.postFFRequest = function (req, res) {
         stmt4.finalize();
 
         let stmt5 = db.prepare("INSERT INTO order_extended_attr (request_id, version, name, value) VALUES (?,?,?,?)");
-        reqBody.extended_attributes.forEach(function (attribute) {
-            stmt5.run(
-                reqBody.id,
-                version,
-                attribute.name,
-                attribute.value
-            );
-        });
-
-        stmt5.finalize();
-
+        if(reqBody.extended_attributes){
+            reqBody.extended_attributes.forEach(function (attribute) {
+                stmt5.run(
+                    reqBody.id,
+                    version,
+                    attribute.name,
+                    attribute.value
+                );
+            });
+            stmt5.finalize();
+        }
+        
         promisifiedInsertItems(reqBody.id, version, reqBody.items);
 
     });
